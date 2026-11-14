@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <header class="topbar">
+        <a class="brand" href="/">
+            <span class="brand-mark">L</span>
+            <span>Libra<span class="brand-light">ry</span></span>
+        </a>
+
+        <nav class="top-nav">
+    <a class="nav-link active" href="/">Dashboard</a>
+    <a class="nav-link" href="#library-actions">Manage Books</a>
+    <a class="nav-link" href="{{ url_for('admin_requests') }}">Borrowing Requests</a>
+    <a class="nav-link logout-link" href="/logout">Logout ↗</a>
+</nav>
+    </header>
+
+    <main class="page-shell">
+
+        <section class="welcome-panel">
+            <div class="welcome-copy">
+                <p class="eyebrow">LIBRARY OVERVIEW</p>
+
+                <h1>Welcome to your<br>
+                    <span>Library Dashboard.</span>
+                </h1>
+
+                <p class="welcome-description">
+                    Organise your collection, track availability and manage
+                    book circulation in one place.
+                </p>
+
+                <button class="primary-button" onclick="showPage('add')">
+                    ＋ Add a new book
+                </button>
+            </div>
+
+            <div class="welcome-art">
+                <div class="book book-one"></div>
+                <div class="book book-two"></div>
+                <div class="book book-three"></div>
+                <div class="art-shelf"></div>
+                <div class="art-caption">
+                    KNOWLEDGE<br>AT YOUR FINGERTIPS
+                </div>
+            </div>
+        </section>
+
+        <section class="section-heading">
+            <div>
+                <p class="eyebrow">AT A GLANCE</p>
+                <h2>Collection summary</h2>
+            </div>
+
+            <span class="live-indicator">
+                <i></i> Live overview
+            </span>
+        </section>
+
+        <section class="stats-container">
+
+            <article class="stat-card total-card">
+                <div class="stat-icon">▤</div>
+                <p class="stat-label">Total books</p>
+                <p class="stat-number" id="totalBooks">0</p>
+                <span class="stat-note">Books in your collection</span>
+            </article>
+
+            <article class="stat-card available-card">
+                <div class="stat-icon">✓</div>
+                <p class="stat-label">Available books</p>
+                <p class="stat-number" id="availableBooks">0</p>
+                <span class="stat-note">Ready to be borrowed</span>
+            </article>
+
+            <article class="stat-card borrowed-card">
+                <div class="stat-icon">↗</div>
+                <p class="stat-label">Borrowed books</p>
+                <p class="stat-number" id="borrowedBooks">0</p>
+                <span class="stat-note">Currently checked out</span>
+            </article>
+
+        </section>
+                </section>
+
+        <!-- Recent Library Activity -->
+        <section class="activity-section">
+            <h2>Recent Library Activity</h2>
+
+            <div id="activityList">
+                <p>Loading activities...</p>
+            </div>
+        </section>
+        <!-- BOOK AVAILABILITY CHART -->
+       <section class="chart-section">
+           <h2>Book Availability Overview</h2>
+  
+           <div class="chart-container">
+            <canvas id="bookChart"></canvas>
+           </div>
+          </section>
+        <section class="actions-section" id="library-actions">
+
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">LIBRARY TOOLS</p>
+                    <h2>Manage your library</h2>
+                </div>
+            </div>
+
+            <div class="action-grid">
+
+                <button class="action-card" onclick="showPage('add')">
+                    <span class="action-icon blue-icon">＋</span>
+                    <span class="action-title">Add books</span>
+                    <span class="action-description">
+                        Add a new title to your collection.
+                    </span>
+                    <span class="action-arrow">→</span>
+                </button>
+
+                <button class="action-card" onclick="viewBooks()">
+                    <span class="action-icon navy-icon">▤</span>
+                    <span class="action-title">View books</span>
+                    <span class="action-description">
+                        Browse all books in the library.
+                    </span>
+                    <span class="action-arrow">→</span>
+                </button>
+
+                <button class="action-card" onclick="showPage('borrow')">
+                    <span class="action-icon green-icon">↗</span>
+                    <span class="action-title">Borrow books</span>
+                    <span class="action-description">
+                        Record a book as borrowed.
+                    </span>
+                    <span class="action-arrow">→</span>
+                </button>
+
+                <button class="action-card" onclick="showPage('return')">
+                    <span class="action-icon amber-icon">↙</span>
+                    <span class="action-title">Return books</span>
+                    <span class="action-description">
+                        Mark a borrowed book as returned.
+                    </span>
+                    <span class="action-arrow">→</span>
+                </button>
+
+            </div>
+        </section>
+
+        <!-- ADD BOOK SECTION -->
+        <section id="add" class="form-section workspace-panel">
+
+            <div class="panel-heading">
+                <p class="eyebrow">NEW RECORD</p>
+                <h2>Add a book</h2>
+                <p>Enter the book details below.</p>
+            </div>
+
+            <input id="bookId" placeholder="Book ID">
+            <input id="bookName" placeholder="Book name">
+            <input id="author" placeholder="Author name">
+
+            <div class="form-actions">
+                <button onclick="addBook()" class="primary-button">
+                    Save book
+                </button>
+
+                <button onclick="goHome()" class="secondary-button">
+                    Back to dashboard
+                </button>
+            </div>
+
+        </section>
+
+        <!-- VIEW BOOKS SECTION -->
+        <section id="view" class="form-section workspace-panel">
+
+            <div class="panel-heading">
+                <p class="eyebrow">YOUR COLLECTION</p>
+                <h2>All books</h2>
+                <p>Search by book ID, title or author.</p>
+            </div>
+
+            <div class="search-row">
+                <input id="searchName" placeholder="Search books...">
+
+                <button onclick="searchBook()" class="primary-button">
+                    Search
+                </button>
+            </div>
+
+            <div id="searchResult"></div>
+            <div id="bookList"></div>
+
+            <button onclick="goHome()" class="secondary-button">
+                Back to dashboard
+            </button>
+
+        </section>
+
+        <!-- BORROW BOOK SECTION -->
+        <section id="borrow" class="form-section workspace-panel">
+
+            <div class="panel-heading">
+                <p class="eyebrow">CIRCULATION</p>
+                <h2>Borrow a book</h2>
+                <p>Enter the ID of the book being borrowed.</p>
+            </div>
+
+            <input id="borrowId" placeholder="Enter book ID">
+
+            <div class="form-actions">
+                <button onclick="borrowBook()" class="primary-button">
+                    Confirm borrow
+                </button>
+
+                <button onclick="goHome()" class="secondary-button">
+                    Back to dashboard
+                </button>
+            </div>
+
+        </section>
+
+        <!-- RETURN BOOK SECTION -->
+        <section id="return" class="form-section workspace-panel">
+
+            <div class="panel-heading">
+                <p class="eyebrow">CIRCULATION</p>
+                <h2>Return a book</h2>
+                <p>Enter the ID of the book being returned.</p>
+            </div>
+
+            <input id="returnId" placeholder="Enter book ID">
+
+            <div class="form-actions">
+                <button onclick="returnBook()" class="primary-button">
+                    Confirm return
+                </button>
+
+                <button onclick="goHome()" class="secondary-button">
+                    Back to dashboard
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <span>Library Management System</span>
+        <span>Simple. Organised. Accessible.</span>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>

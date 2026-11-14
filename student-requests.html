@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Borrowing Requests | Library Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fc;
+            color: #24334d;
+        }
+
+        .navbar {
+            background: #102b55;
+            color: white;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .navbar h2 {
+            font-size: 23px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .navbar a:hover {
+            color: #a9c9ff;
+        }
+
+        .student-requests {
+            max-width: 1100px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .requests-heading {
+            background: linear-gradient(120deg, #102b55, #3768a8);
+            color: white;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .requests-heading h1 {
+            margin-bottom: 12px;
+            font-size: 28px;
+        }
+
+        .requests-heading p {
+            color: #e0eaff;
+            line-height: 1.5;
+        }
+
+        .requests-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+
+        .requests-card h2 {
+            color: #102b55;
+            margin-bottom: 20px;
+        }
+
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .requests-table th {
+            background: #102b55;
+            color: white;
+            padding: 16px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .requests-table td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5eaf2;
+            font-size: 14px;
+        }
+
+        .requests-table tbody tr:hover {
+            background: #f5f8fd;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #9a6700;
+        }
+
+        .approved {
+            background: #d8f5e3;
+            color: #167442;
+        }
+
+        .rejected {
+            background: #fde2e2;
+            color: #c62828;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 55px 20px;
+            color: #718096;
+        }
+
+        .empty-message h2 {
+            color: #102b55;
+            margin-bottom: 12px;
+        }
+
+        .back-button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 13px 22px;
+            background: #102b55;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .back-button:hover {
+            background: #3768a8;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #718096;
+            font-size: 13px;
+        }
+
+        @media(max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .navbar a {
+                margin: 8px;
+                display: inline-block;
+            }
+
+            .requests-heading {
+                padding: 25px;
+            }
+
+            .requests-heading h1 {
+                font-size: 23px;
+            }
+
+            .requests-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+
+        <h2>📚 Library Portal</h2>
+
+        <div>
+            <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+
+            <a href="{{ url_for('student_books') }}">Available Books</a>
+
+            <a href="/student/my-requests">My Requests</a>
+        </div>
+
+    </nav>
+
+    <main class="student-requests">
+
+        <!-- PAGE HEADER -->
+        <header class="requests-heading">
+
+            <h1>📚 My Borrowing Requests</h1>
+
+            <p>
+                Track the status of your book borrowing requests.
+                Stay updated on your library activity.
+            </p>
+
+        </header>
+
+        <!-- REQUEST TABLE -->
+        <section class="requests-card">
+
+            {% if requests %}
+
+                <h2>Request History</h2>
+
+                <table class="requests-table">
+
+                    <thead>
+                        <tr>
+                            <th>Book Title</th>
+                            <th>Author</th>
+                            <th>Request Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in requests %}
+
+                        <tr>
+
+                            <td>📖 {{ item['book_name'] }}</td>
+
+                            <td>{{ item['author'] }}</td>
+
+                            <td>{{ item['requested_at'] }}</td>
+
+                            <td>
+
+                                <span class="status
+                                    {% if item['status'] == 'Pending' %}pending
+                                    {% elif item['status'] == 'Approved' %}approved
+                                    {% elif item['status'] == 'Rejected' %}rejected
+                                    {% endif %}">
+
+                                    {{ item['status'] }}
+
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            {% else %}
+
+                <div class="empty-message">
+
+                    <h2>📚 No Requests Yet</h2>
+
+                    <p>
+                        Your borrowing requests will appear here.
+                        Visit Available Books to request a book.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <!-- BACK BUTTON -->
+        <a href="{{ url_for('student_dashboard') }}"
+           class="back-button">
+
+            ← Back to Student Dashboard
+
+        </a>
+
+    </main>
+
+    <footer>
+        © 2026 Library Management System. All Rights Reserved.
+    </footer>
+
+</body>
+</html>
+```

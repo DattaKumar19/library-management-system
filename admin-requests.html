@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Borrowing Requests | Admin</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .requests-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 25px;
+        }
+
+        .requests-header {
+            margin-bottom: 30px;
+        }
+
+        .requests-header h1 {
+            color: #142d59;
+        }
+
+        .requests-table-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .requests-table th,
+        .requests-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5eaf2;
+        }
+
+        .requests-table th {
+            background: #142d59;
+            color: white;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .approve-btn,
+        .reject-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            margin: 3px;
+        }
+
+        .approve-btn {
+            background: #198754;
+        }
+
+        .reject-btn {
+            background: #dc3545;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 35px;
+            color: #777;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 18px;
+            background: #142d59;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="requests-container">
+
+    <header class="requests-header">
+        <h1>📚 Borrowing Requests</h1>
+        <p>View and manage student book borrowing requests.</p>
+    </header>
+
+    <section class="requests-table-container">
+
+        {% if requests %}
+
+        <table class="requests-table">
+
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Book ID</th>
+                    <th>Book Title</th>
+                    <th>Author</th>
+                    <th>Request Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in requests %}
+
+                <tr>
+                    <td>{{ item['full_name'] }}</td>
+                    <td>{{ item['book_id'] }}</td>
+                    <td>{{ item['book_name'] }}</td>
+                    <td>{{ item['author'] }}</td>
+                    <td>{{ item['requested_at'] }}</td>
+
+                    <td class="status">
+                        {{ item['status'] }}
+                    </td>
+
+                    <td>
+                        {% if item['status'] == 'Pending' %}
+
+                        <form method="POST"
+                              action="{{ url_for('update_request', request_id=item['id'], action='approve') }}"
+                              style="display:inline;">
+
+                            <button type="submit"
+                                    class="approve-btn">
+                                Approve
+                            </button>
+
+                        </form>
+
+                        <form method="POST"
+                              action="{{ url_for('update_request', request_id=item['id'], action='reject') }}"
+                              style="display:inline;">
+
+                            <button type="submit"
+                                    class="reject-btn">
+                                Reject
+                            </button>
+
+                        </form>
+
+                        {% else %}
+
+                        No action needed
+
+                        {% endif %}
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty-message">
+            <h2>No Borrowing Requests Yet</h2>
+            <p>Student requests will appear here.</p>
+        </div>
+
+        {% endif %}
+
+    </section>
+
+    <a href="{{ url_for('home') }}" class="back-link">
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+</body>
+</html>

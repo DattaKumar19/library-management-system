@@ -1,0 +1,321 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard | Library Management</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fc;
+            color: #24334d;
+        }
+
+        .student-navbar {
+            background: #102b55;
+            color: white;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+
+        .student-navbar h2 {
+            font-size: 24px;
+        }
+
+        .student-navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 22px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .student-navbar a:hover {
+            color: #a9c9ff;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            padding: 10px 18px;
+            border-radius: 7px;
+        }
+
+        .logout-btn:hover {
+            background: #b52a37;
+            color: white !important;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .welcome-section {
+            background: linear-gradient(120deg, #102b55, #3768a8);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 35px;
+            box-shadow: 0 6px 18px rgba(16,43,85,0.18);
+        }
+
+        .welcome-section h1 {
+            margin-bottom: 12px;
+            font-size: 30px;
+        }
+
+        .welcome-section p {
+            color: #e0eaff;
+            line-height: 1.6;
+        }
+
+        .section-title {
+            margin-bottom: 22px;
+            font-size: 23px;
+            color: #102b55;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+            margin-bottom: 35px;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 25px;
+            border-radius: 13px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            border-bottom: 4px solid #315b96;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+        }
+
+        .dashboard-card h3 {
+            font-size: 16px;
+            margin-bottom: 12px;
+            color: #263b5c;
+        }
+
+        .dashboard-card p {
+            color: #718096;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .dashboard-card .icon {
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        .card-number {
+            font-size: 32px;
+            margin: 10px 0;
+            color: #315b96;
+        }
+
+        .quick-actions,
+        .profile-section {
+            background: white;
+            padding: 30px;
+            border-radius: 13px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+        }
+
+        .quick-actions h2,
+        .profile-section h2 {
+            color: #102b55;
+            margin-bottom: 12px;
+        }
+
+        .quick-actions p {
+            color: #718096;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 22px;
+        }
+
+        .action-btn {
+            display: inline-block;
+            background: #102b55;
+            color: white;
+            text-decoration: none;
+            padding: 13px 22px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #3768a8;
+            transform: translateY(-2px);
+        }
+
+        .profile-section p {
+            margin-top: 15px;
+            color: #53647e;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #718096;
+            font-size: 13px;
+        }
+
+        @media(max-width: 600px) {
+            .student-navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .student-navbar a {
+                margin: 8px;
+                display: inline-block;
+            }
+
+            .welcome-section {
+                padding: 25px;
+            }
+
+            .welcome-section h1 {
+                font-size: 24px;
+            }
+
+            .quick-actions,
+            .profile-section {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <nav class="student-navbar">
+
+        <h2>📚 Library Portal</h2>
+
+        <div>
+            <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+
+            <a href="{{ url_for('student_books') }}">Available Books</a>
+
+            <a href="/student/my-requests">My Requests</a>
+
+            <a href="{{ url_for('student_logout') }}"
+               class="logout-btn">Logout</a>
+        </div>
+
+    </nav>
+
+    <main class="dashboard-container">
+
+        <!-- WELCOME -->
+        <section class="welcome-section">
+
+            <h1>Welcome, {{ student_name }}! 👋</h1>
+
+            <p>
+                Welcome to your Student Library Dashboard.
+                Explore books, discover knowledge and manage
+                your borrowing requests in one place.
+            </p>
+
+        </section>
+
+        <!-- STATISTICS -->
+        <h2 class="section-title">Dashboard Overview</h2>
+
+        <section class="dashboard-cards">
+
+            <div class="dashboard-card">
+                <div class="icon">📚</div>
+                <h3>Available Books</h3>
+                <h2 class="card-number">{{ available_count }}</h2>
+                <p>Books currently available in the library.</p>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="icon">🔍</div>
+                <h3>Book Discovery</h3>
+                <p>Find books by title, author and book ID.</p>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="icon">👤</div>
+                <h3>Student Account</h3>
+                <p>Your student account is active.</p>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="icon">🟡</div>
+                <h3>Pending Requests</h3>
+                <h2 class="card-number" style="color:#d18b00;">
+                    {{ pending_count }}
+                </h2>
+                <p>Waiting for admin approval.</p>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="icon">🟢</div>
+                <h3>Approved Requests</h3>
+                <h2 class="card-number" style="color:#198754;">
+                    {{ approved_count }}
+                </h2>
+                <p>Your borrowing requests approved.</p>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="icon">🔴</div>
+                <h3>Rejected Requests</h3>
+                <h2 class="card-number" style="color:#dc3545;">
+                    {{ rejected_count }}
+                </h2>
+                <p>Your borrowing requests rejected.</p>
+            </div>
+
+        </section>
+
+        <!-- QUICK ACTIONS -->
+        <section class="quick-actions">
+
+            <h2>⚡ Quick Actions</h2>
+
+            <p>Choose what you would like to do.</p>
+
+            <div class="action-buttons">
+
+                <a href="{{ url_for('student_books') }}"
+                   class="action-btn">
+                    📖

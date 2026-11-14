@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Available Books | Library Portal</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fc;
+            color: #24334d;
+        }
+
+        .navbar {
+            background: #102b55;
+            color: white;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .navbar h2 {
+            font-size: 23px;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .navbar a:hover {
+            color: #a9c9ff;
+        }
+
+        .student-books-container {
+            max-width: 1200px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .books-header {
+            background: linear-gradient(120deg, #102b55, #3768a8);
+            color: white;
+            padding: 35px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .books-header h1 {
+            margin-bottom: 12px;
+            font-size: 29px;
+        }
+
+        .books-header p {
+            color: #e0eaff;
+            line-height: 1.5;
+        }
+
+        .search-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .search-container form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .search-container input {
+            flex: 1;
+            min-width: 200px;
+            padding: 13px;
+            border: 1px solid #ccd5e2;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: #315b96;
+        }
+
+        .search-container button {
+            background: #102b55;
+            color: white;
+            border: none;
+            padding: 13px 22px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-container button:hover {
+            background: #3768a8;
+        }
+
+        .clear-btn {
+            background: #e8edf5;
+            color: #102b55;
+            text-decoration: none;
+            padding: 13px 20px;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .books-table-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .books-table-container h2 {
+            color: #102b55;
+            margin-bottom: 22px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .books-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        .books-table th {
+            background: #102b55;
+            color: white;
+            padding: 16px;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .books-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e8edf5;
+            font-size: 14px;
+        }
+
+        .books-table tbody tr:hover {
+            background: #f5f8fd;
+        }
+
+        .book-icon {
+            font-size: 24px;
+        }
+
+        .availability-badge {
+            background: #d8f5e3;
+            color: #167442;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .request-btn {
+            background: #315b96;
+            color: white;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .request-btn:hover {
+            background: #102b55;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .success-message {
+            background: #d8f5e3;
+            color: #167442;
+        }
+
+        .warning-message {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .empty-books {
+            text-align: center;
+            padding: 50px 20px;
+            color: #718096;
+        }
+
+        .empty-books h3 {
+            color: #102b55;
+            margin-bottom: 12px;
+            font-size: 22px;
+        }
+
+        .back-button-container {
+            margin-top: 25px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: #102b55;
+            color: white;
+            text-decoration: none;
+            padding: 13px 22px;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background: #3768a8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #718096;
+            font-size: 13px;
+        }
+
+        @media(max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .navbar a {
+                margin: 8px;
+                display: inline-block;
+            }
+
+            .books-header {
+                padding: 25px;
+            }
+
+            .books-header h1 {
+                font-size: 24px;
+            }
+
+            .search-container,
+            .books-table-container {
+                padding: 18px;
+            }
+
+            .search-container input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <nav class="navbar">
+
+        <h2>📚 Library Portal</h2>
+
+        <div>
+            <a href="{{ url_for('student_dashboard') }}">Dashboard</a>
+
+            <a href="{{ url_for('student_books') }}">Available Books</a>
+
+            <a href="/student/my-requests">My Requests</a>
+        </div>
+
+    </nav>
+
+    <div class="student-books-container">
+
+        <!-- HEADER -->
+        <header class="books-header">
+
+            <h1>📚 Available Books</h1>
+
+            <p>
+                Explore our library collection and discover your next read.
+            </p>
+
+        </header>
+
+        <!-- SEARCH -->
+        <section class="search-container">
+
+            <form method="GET" action="{{ url_for('student_books') }}">
+
+                <input
+                    type="text"
+                    name="search"
+                    placeholder="Search by title, author or Book ID..."
+                    value="{{ search }}"
+                >
+
+                <button type="submit">🔍 Search</button>
+
+                <a href="{{ url_for('student_books') }}"
+                   class="clear-btn">Clear</a>
+
+            </form>
+
+        </section>
+
+        <!-- MESSAGES -->
+        {% if request.args.get('message') == 'requested' %}
+
+            <div class="message success-message">
+                ✅ Your borrowing request was submitted successfully!
+            </div>
+
+        {% elif request.args.get('message') == 'already' %}
+
+            <div class="message warning-message">
+                ⚠️ You have already requested this book.
+            </div>
+
+        {% endif %}
+
+        <!-- BOOK TABLE -->
+        <section class="books-table-container">
+
+            <h2>📖 Library Collection</h2>
+
+            {% if books %}
+
+                <div class="table-responsive">
+
+                    <table class="books-table">
+
+                        <thead>
+                            <tr>
+                                <th>Book</th>
+                                <th>Book ID</th>
+                                <th>Book Title</th>
+                                <th>Author</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for book in books %}
+
+                                <tr>
+
+                                    <td class="book-icon">📖</td>
+
+                                    <td>{{ book['id'] }}</td>
+
+                                    <td>{{ book['name'] }}</td>
+
+                                    <td>{{ book['author'] }}</td>
+
+                                    <td>
+                                        <span class="availability-badge">
+                                            Available
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <form method="POST"
+                                              action="{{ url_for('request_book', book_id=book['id']) }}">
+
+                                            <button type="submit"
+                                                    class="request-btn">
+                                                📚 Request to Borrow
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-books">
+
+                    <h3>📚 No Books Found</h3>
+
+                    <p>
+                        Try another title, author name or Book ID.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <!-- BACK BUTTON -->
+        <div class="back-button-container">
+
+            <a href="{{ url_for('student_dashboard') }}"
+               class="back-button">
+                ← Back to Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+    <footer>
+        © 2026 Library Management System. All Rights Reserved.
+    </footer>
+
+</body>
+</html>
+```

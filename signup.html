@@ -1,0 +1,86 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Signup | Library Management</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="login-box">
+
+            <h1>📚 Student Signup</h1>
+            <p>Create your library account</p>
+
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+
+            {% if success %}
+                <p style="color: green;">{{ success }}</p>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('signup') }}">
+
+                <input
+                    type="text"
+                    name="full_name"
+                    placeholder="Full Name"
+                    required
+                >
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    required
+                >
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Create Username"
+                    autocomplete="username"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Create Password (minimum 8 characters)"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="confirm_password"
+                    placeholder="Confirm Password"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <button type="submit">Create Account</button>
+
+            </form>
+
+            <p>
+                Already have an account?
+                <a href="{{ url_for('student_login') }}">Student Login</a>
+            </p>
+
+            <p>
+                <a href="{{ url_for('login') }}">Admin Login</a>
+            </p>
+
+        </div>
+    </div>
+
+</body>
+</html>
+```
