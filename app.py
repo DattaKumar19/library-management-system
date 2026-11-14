@@ -682,14 +682,7 @@ def student_my_requests():
         'student-requests.html',
         requests=requests_list
     )
-
-if __name__ == '__main__':
-    create_table()
-    create_admin_table()
-    create_student_table()
-    print(app.url_map)
-    app.run(debug=True)
-@app.route('/api/activity', methods=['GET'])
+    @app.route('/api/activity', methods=['GET'])
 @admin_required
 def get_activity():
     conn = get_db()
@@ -706,3 +699,11 @@ def get_activity():
 
     finally:
         conn.close()  
+
+
+if __name__ == '__main__':
+    create_table()
+    create_admin_table()
+    create_student_table()
+    print(app.url_map)
+    app.run(debug=True)
