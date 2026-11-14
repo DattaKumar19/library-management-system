@@ -3,8 +3,9 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import sqlite3
+import os
 app = Flask(__name__)
-app.secret_key = "change-this-to-a-long-random-secret"
+app.secret_key = os.environ.get("SECRET_KEY", "development-only-secret-key")
 # --------------------------------
 # DATABASE CONNECTION
 # --------------------------------
